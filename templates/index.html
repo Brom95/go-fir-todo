@@ -1,0 +1,49 @@
+{{ define "content" }}
+
+<div x-data>
+    {{ block "add" .}}
+    <form class="d-flex gap-2" x-ref="addTodo" @fir:add:ok::add="$refs.addTodo.reset()" method="post"
+        @submit.prevent="$fir.submit()">
+        <input type="text" name="name" class="form-control" placeholder="Enter task">
+        <button formaction="/?event=add" type="submit" class="btn btn-primary"><i
+                class="bi bi-plus-circle"></i></button>
+    </form>
+    {{end}}
+
+
+    <div 
+    
+    @fir:[add:ok,complete:ok,notcomplete:ok]::tasks="$fir.replace()">
+
+        {{block "tasks" .}}
+        {{range .tasks}}
+
+        {{block "task" .}}
+        <div class="row" fir-key="{{ .Id }}" >
+            <div class="col">
+            <form method="post" @submit.prevent="$fir.submit()">
+                <input type="hidden" name="taskID" value="{{ .Id }}" />
+                    {{if .Complete}}
+                    <button formaction="/?event=notcomplete" class="btn">
+                        <i class="bi bi-check2-square"></i>
+                    </button>
+                    {{else}}
+                    <button formaction="/?event=complete" class="btn">
+                        <i class="bi bi-square"></i>
+                    </button>
+                    {{end}}
+                </form>
+            </div>
+            <div class="col">
+                <p>{{.Name}}</p>
+            </div>
+        </div>
+
+        {{end}}
+        {{else}}
+        <div class="mt-5">No tasks found</div>
+        {{end}}
+        {{end}}
+        {{end}}
+    </div>
+</div>
